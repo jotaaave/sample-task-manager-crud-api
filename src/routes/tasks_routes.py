@@ -37,15 +37,16 @@ def view_tasks():
 @task_bp.get('/<int:id>')
 def get_one_task(id):
     global selected_task
-    selected_task = {
-        'task': {}
-    }
+    selected_task = {}
 
     for task in tasks:
         if task['id'] == id:
-            selected_task['task'] = task
+            selected_task = task
             break
         else:
             continue
-    
-    return selected_task
+
+    if selected_task:
+        return jsonify({ "task": selected_task }), 302
+    else:
+        return jsonify({ "message": 'Não foi encontrada nenhuma tarefa!'}), 404
