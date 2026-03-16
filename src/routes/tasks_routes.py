@@ -50,3 +50,30 @@ def get_one_task(id):
         return jsonify({ "task": selected_task }), 302
     else:
         return jsonify({ "message": 'Não foi encontrada nenhuma tarefa!'}), 404
+    
+@task_bp.put('/<int:id>')
+def update_task(id):
+    global task
+    task = None
+
+    data = request.get_json()
+
+    for taskItem in tasks:
+        if taskItem['id'] == id:
+            task = taskItem
+        else:
+            continue
+
+    if task:
+        task['title'] = data.get('title') or task['title']
+        task['description'] = data.get('description') or task['description']
+        task['completed'] = data.get('completed') if data.get('completed') is not None else task['completed']
+
+        return jsonify({
+            "message": "Tarefa atualiza com sucesso!",
+            "task": task
+        })
+    else:
+        return jsonify({
+            "message": 'Não foi possivel encontrar a tarefa'
+        }), 404
