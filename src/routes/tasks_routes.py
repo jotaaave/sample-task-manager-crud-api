@@ -4,6 +4,7 @@ from services.create_new_task import create_new_task
 from services.get_all_tasks import get_all_tasks
 from services.find_task_by_id import find_task_by_id
 from services.update_task import update_task_service
+from services.delete_task import delete_task_service
 
 task_bp = Blueprint('tasks', __name__, url_prefix='/tasks')
 
@@ -57,3 +58,11 @@ def update_task(id):
         return jsonify({
             "message": 'Não foi possivel encontrar a tarefa'
         }), 404
+    
+@task_bp.delete('/<int:id>')
+def delete_task(id):
+    task_deleted = delete_task_service(id)
+
+    return jsonify({
+        "message": "Sua tarefa foi deletada com sucesso!" if task_deleted else "Não foi possivel deletar sua tarefa"
+    })

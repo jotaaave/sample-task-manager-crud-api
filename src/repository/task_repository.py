@@ -39,5 +39,15 @@ class TaskRepositoryInMemory:
         task['completed'] = data.get('completed') if data.get('completed') is not None else task['completed']
 
         return task
+    
+    def delete_task_by_id(self, id):
+        task = self.find_by_id(id)
+
+        if not task:
+            return None
+        
+        self.tasks.remove(task)
+
+        return True
 
 task_repository = TaskRepositoryInMemory()
