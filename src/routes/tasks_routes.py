@@ -1,10 +1,15 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 from models.task import Task
+
+# Services
 from services.create_new_task import create_new_task
 from services.get_all_tasks import get_all_tasks
 from services.find_task_by_id import find_task_by_id
 from services.update_task import update_task_service
 from services.delete_task import delete_task_service
+
+# Middlewares
+from middleware.auth_middle import auth_require
 
 task_bp = Blueprint('tasks', __name__, url_prefix='/tasks')
 
@@ -14,6 +19,7 @@ task_id_control = 1
 
 # Create
 @task_bp.post('/')
+@auth_require
 def create_task():
     global task_id_control
 
@@ -28,6 +34,7 @@ def create_task():
 
 # Read 
 @task_bp.get('/')
+@auth_require
 def view_tasks():
     return jsonify({
         "tasks": get_all_tasks()
@@ -35,7 +42,9 @@ def view_tasks():
 
 # Read-One
 @task_bp.get('/<int:id>')
+@auth_require
 def get_one_task(id):
+    print(g.user_id)
     task = find_task_by_id(id)
 
     if task:
@@ -44,6 +53,7 @@ def get_one_task(id):
         return jsonify({ "message": 'Não foi encontrada nenhuma tarefa!'}), 404
     
 @task_bp.put('/<int:id>')
+@auth_require
 def update_task(id):
     data = request.get_json()
 
@@ -60,6 +70,7 @@ def update_task(id):
         }), 404
     
 @task_bp.delete('/<int:id>')
+@auth_require
 def delete_task(id):
     task_deleted = delete_task_service(id)
 
